@@ -1,17 +1,26 @@
-from django.urls import path, include
-from rest_framework.routers import DefaultRouter
+from django.urls import path
 from .views import (
-    CategoryListCreateView, CategoryRetrieveUpdateDestroyView,
-    ProductListCreateView, ProductRetrieveUpdateDestroyView,
-    FeatureListCreateView, FeatureRetrieveUpdateDestroyView,
-    BrandListCreateView, BrandRetrieveUpdateDestroyView,
-    CategoryAttributeListCreateView, CategoryAttributeRetrieveUpdateDestroyView,
-    ProductAttributeValueListCreateView, ProductAttributeValueRetrieveUpdateDestroyView,
-    ProductImageListCreateView, DealListView
+    CategoryListCreateView,
+    CategoryRetrieveUpdateDestroyView,
+    ProductListCreateView,
+    ProductRetrieveUpdateDestroyView,
+    FeatureListCreateView,
+    FeatureRetrieveUpdateDestroyView,
+    BrandListCreateView,
+    BrandRetrieveUpdateDestroyView,
+    CategoryAttributeListCreateView,
+    CategoryAttributeRetrieveUpdateDestroyView,
+    ProductAttributeValueListCreateView,
+    ProductAttributeValueRetrieveUpdateDestroyView,
+    DealListView,
+    RegisterAPIView,
+    LoginAPIView
 )
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
+    path('register', RegisterAPIView.as_view(), name='register'),  # for JWT token generation
+    path('login', LoginAPIView.as_view(), name='login'),
     # Category URLs
     path('api/categories/', CategoryListCreateView.as_view(), name='category-list-create'),
     path('api/categories/<int:pk>/', CategoryRetrieveUpdateDestroyView.as_view(), name='category-detail'),
@@ -19,8 +28,6 @@ urlpatterns = [
     # Product URLs
     path('api/products/', ProductListCreateView.as_view(), name='product-list-create'),
     path('api/products/<int:pk>/', ProductRetrieveUpdateDestroyView.as_view(), name='product-detail'),
-
-
 
     # Feature URLs
     path('api/features/', FeatureListCreateView.as_view(), name='feature-list-create'),
@@ -45,7 +52,4 @@ urlpatterns = [
     path('api/products-list/', ProductListCreateView.as_view(), name='product-list'),
     path('api/deals/', DealListView.as_view(), name='deal-list'),
 
-    # Authentication URLs
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
 ]

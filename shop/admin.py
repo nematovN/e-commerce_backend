@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import Category, Product, Deal, Brand,Feature ,ProductAttributeValue
 from django.contrib import admin
-from .models import Product, ProductImage,CategoryAttribute
+from .models import Product, ProductImage,CategoryAttribute, User
 
 
 class ProductImageInline(admin.TabularInline):
@@ -17,6 +17,7 @@ admin.site.register(Brand)
 admin.site.register(Feature)
 admin.site.register(ProductAttributeValue)
 admin.site.register(CategoryAttribute)
+admin.site.register(User)
 
 @admin.register(Deal)
 class DealAdmin(admin.ModelAdmin):

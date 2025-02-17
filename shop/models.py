@@ -19,10 +19,13 @@ class User(AbstractBaseUser, PermissionsMixin):
     avatar = models.ImageField(upload_to="avatar/student", null=True, blank=True)
     is_staff = models.BooleanField(default=False)
     is_superuser = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    date_joined = models.DateTimeField(default=timezone.now)
+
     objects = UserManager()
 
     USERNAME_FIELD = 'email'
-    REQUIRED_FIELDS = ['username', 'password']
+    REQUIRED_FIELDS = ['username']
 
     class Meta:
         verbose_name = 'user'
@@ -46,8 +49,8 @@ class CategoryAttribute(models.Model):
 
 
 class Feature(models.Model):
-    name = models.CharField(max_length=255)  # Masalan, "Color", "Storage"
-    value = models.CharField(max_length=255)  # Masalan, "Red", "128GB"
+    name = models.CharField(max_length=255)
+    value = models.CharField(max_length=255)
 
     def __str__(self):
         return f"{self.name}: {self.value}"
@@ -62,9 +65,6 @@ class Brand(models.Model):
         return self.name
 
 
-# Product
-
-
 class Product(models.Model):
     id = models.AutoField(primary_key=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -73,7 +73,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField()
     created_at = models.DateTimeField(default=timezone.now)
-    updated_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True, blank=True)
     features = models.ManyToManyField(Feature, related_name="products")
 
@@ -97,22 +97,19 @@ class ProductImage(models.Model):
 
 
 class Deal(models.Model):
-    product = models.ForeignKey('shop.Product', on_delete=models.CASCADE, related_name='deals')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='deals')
     product_name = models.CharField(max_length=255, help_text='Enter product name')
     discount_percent = models.DecimalField(max_digits=5, decimal_places=2, help_text="Chegirma foizda (%)")
     start_time = models.DateTimeField(default=timezone.now, help_text="Chegirma boshlanish vaqti")
-    duration = models.DurationField(default=timedelta(hours=24),
-                                    help_text="Chegirma qancha davom etadi (masalan, 24 soat)")
+    duration = models.DurationField(default=timedelta(hours=24), help_text="Chegirma qancha davom etadi (masalan, 24 soat)")
     end_time = models.DateTimeField(null=True, blank=True, help_text="Chegirma tugash vaqti")
     is_active = models.BooleanField(default=True, help_text="Chegirma aktiv yoki yo'q")
 
     def save(self, *args, **kwargs):
-        """Chegirma tugash vaqtini avtomatik hisoblaydi"""
         self.end_time = self.start_time + self.duration
         super().save(*args, **kwargs)
 
     def is_valid(self):
-        """Chegirma hali tugamaganligini tekshiradi"""
         return self.start_time <= timezone.now() <= self.end_time
 
     def __str__(self):
