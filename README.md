@@ -1,8 +1,8 @@
 # E-Commerce Backend
 
-![GitHub repo size](https://img.shields.io/github/repo-size/nematovN/ecommerce_backend)
-![GitHub contributors](https://img.shields.io/github/contributors/nematovN/ecommerce_backend)
-![GitHub last commit](https://img.shields.io/github/last-commit/nematovN/ecommerce_backend)
+![GitHub repo size](https://img.shields.io/github/repo-size/nematovN/e-commerce_backend)
+![GitHub contributors](https://img.shields.io/github/contributors/nematovN/e-commerce_backend)
+![GitHub last commit](https://img.shields.io/github/last-commit/nematovN/e-commerce_backend)
 
 ## 📌 Overview
 This is a backend service for an e-commerce platform built using Django and Django REST Framework (DRF). The API provides user authentication, product management, pagination, filtering, and admin functionalities.
