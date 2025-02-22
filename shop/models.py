@@ -40,12 +40,6 @@ class Category(models.Model):
         return self.name
 
 
-class CategoryAttribute(models.Model):
-    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name="attributes")
-    name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return f"{self.category.name} - {self.name}"
 
 
 class Feature(models.Model):
@@ -72,7 +66,7 @@ class Product(models.Model):
     description = models.TextField()
     price = models.DecimalField(max_digits=10, decimal_places=2)
     stock = models.PositiveIntegerField()
-    created_at = models.DateTimeField(default=timezone.now)
+    created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True, blank=True)
     features = models.ManyToManyField(Feature, related_name="products")
@@ -83,7 +77,7 @@ class Product(models.Model):
 
 class ProductAttributeValue(models.Model):
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="attribute_values")
-    attribute = models.ForeignKey(CategoryAttribute, on_delete=models.CASCADE)
+
     value = models.CharField(max_length=255)
 
     def __str__(self):
@@ -114,3 +108,28 @@ class Deal(models.Model):
 
     def __str__(self):
         return f"{self.product.name} - {self.discount_percent}% chegirma ({self.duration})"
+
+
+#   Comment
+
+class Comment(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="comments")
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.product.name}"
+
+# Like
+
+class Like(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="likes")
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        unique_together = ('user', 'product')  # Bir user bitta productga faqat bitta like qo‘ya oladi
+
+    def __str__(self):
+        return f"{self.user.username} liked {self.product.name}"

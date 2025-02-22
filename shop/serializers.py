@@ -1,8 +1,12 @@
+from collections import OrderedDict
+
 from rest_framework import serializers
+from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import get_user_model
+from datetime import timedelta
 from .models import (
     Category, Product, Deal, Brand, Feature,
-    ProductImage, CategoryAttribute, ProductAttributeValue
+    ProductImage,  Like, Comment
 )
 
 User = get_user_model()
@@ -16,12 +20,12 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True, validators=[validate_password])
+
 
     class Meta:
         model = User
-        fields = ['email', 'username', 'password', 'role', 'first_name', 'last_name', 'avatar']
-
+        fields = ['email', 'username', 'password', 'first_name', 'last_name', 'avatar']
 
 class LoginSerializer(serializers.Serializer):
     email = serializers.EmailField()
@@ -40,18 +44,7 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class CategoryAttributeSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = CategoryAttribute
-        fields = "__all__"
 
-
-class ProductAttributeValueSerializer(serializers.ModelSerializer):
-    attribute_name = serializers.CharField(source='attribute.name', read_only=True)
-
-    class Meta:
-        model = ProductAttributeValue
-        fields = ["id", "attribute", "attribute_name", "value"]
 
 
 class ProductImageSerializer(serializers.ModelSerializer):
@@ -67,26 +60,56 @@ class ProductImageSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.image.url)
         return obj.image.url
 
+class CommentSerializer(serializers.ModelSerializer):
+    user = UserSerializer(read_only=True)  # Foydalanuvchi haqida ma'lumot qo'shish uchun
+
+    class Meta:
+        model = Comment
+        fields = ['id', 'user', 'product', 'text', 'created_at']
+        read_only_fields = ['user', 'product', 'created_at']
+
+
+class LikeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Like
+        fields = ['id', 'user', 'product', 'created_at']
+        read_only_fields = ['user', 'product', 'created_at']
+
 
 class ProductSerializer(serializers.ModelSerializer):
     images = ProductImageSerializer(many=True, read_only=True)
     features = FeatureSerializer(many=True)
     category_name = serializers.CharField(source='category.name', read_only=True)
-    attribute_values = ProductAttributeValueSerializer(many=True, read_only=True)
-
+    created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
+    updated_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
+    comment_count = serializers.IntegerField(source='comments.count', read_only=True)
+    like_count = serializers.IntegerField(source='likes.count', read_only=True)
+    comments = CommentSerializer(many=True, read_only=True)  # Mahsulotga yozilgan sharhlar
+    is_liked = serializers.SerializerMethodField()  # Foydalanuvchi mahsulotni yoqtirganmi
     class Meta:
         model = Product
         fields = [
             "id", "name", "description", "price", "stock", "created_at",
-            "updated_at", "category", "brand", "images", "features",
-            'attribute_values', 'category_name'
+            "updated_at", "category", "category_name", "brand", "images",
+            "features", "comment_count", "like_count", "comments", "is_liked"
         ]
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        return OrderedDict(sorted(data.items()))
+
+    def get_is_liked(self, obj):
+        request = self.context.get('request')
+        if request and request.user.is_authenticated:
+            return obj.likes.filter(user=request.user).exists()
+        return False
 
 
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
         fields = ['name']
+
 
 
 class DealSerializer(serializers.ModelSerializer):
@@ -103,7 +126,10 @@ class DealSerializer(serializers.ModelSerializer):
         if first_image:
             request = self.context.get("request")
             return request.build_absolute_uri(first_image.image.url) if request else first_image.image.url
-        return None  # Agar rasm bo'lmasa, `None` qaytariladi
+        return None
 
     def get_end_time(self, obj):
-        return obj.start_time + obj.duration
+        if obj.start_time and obj.duration:
+            duration = obj.duration if isinstance(obj.duration, timedelta) else timedelta(seconds=obj.duration)
+            return (obj.start_time + duration).strftime("%Y-%m-%d %H:%M:%S")
+        return None  # Agar start_time yoki duration bo‘lmasa, `None`
