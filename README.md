@@ -1,119 +1,76 @@
 # E-Commerce Backend
 
-![GitHub repo size](https://img.shields.io/github/repo-size/nematovN/e-commerce_backend)
-![GitHub contributors](https://img.shields.io/github/contributors/nematovN/e-commerce_backend)
-![GitHub last commit](https://img.shields.io/github/last-commit/nematovN/e-commerce_backend)
-![GitHub stars](https://img.shields.io/github/stars/nematovN/e-commerce_backend?style=social)
-![GitHub forks](https://img.shields.io/github/forks/nematovN/e-commerce_backend?style=social)
-![GitHub license](https://img.shields.io/github/license/nematovN/e-commerce_backend)
+🚀 **Django REST Framework (DRF) asosida qurilgan e-commerce backend**
 
+Bu loyiha **[Figma eCommerce UI Kit](https://www.figma.com/design/My44GoSUIQMJHZEtlDZdXJ/Figma-ecommerce-UI-Kit-(web-%26-mobile)-(Community)?node-id=0-1&p=f&t=1tiJd543foBMZurO-0)** dizayni asosida ishlab chiqildi va to'liq DRF orqali API yaratildi.
 
-## 📌 Overview
-This is a backend service for an e-commerce platform built using Django and Django REST Framework (DRF). The API provides user authentication, product management, pagination, filtering, and admin functionalities.
+## 📌 Xususiyatlar
 
-## 🛠️ Features
-- **User Authentication**: JWT-based authentication with login and registration.
-- **Role Management**: Admin and regular users.
-- **Product Management**: CRUD operations for products.
-- **Pagination & Filtering**: Optimized data retrieval.
-- **Comment & Likes**: Users can comment on and like products.
-- **Admin Panel**: Secure admin functionalities.
+- 🔐 **Autentifikatsiya & Avtorizatsiya** (Login, Register, JWT Token)
+- 🏷️ **Mahsulotlar** (Ro'yxat, Tafsilotlar, Izlash, Filtrlash, Saralash)
+- 🛍️ **Brendlar & Kategoriyalar**
+- ⭐ **Foydalanuvchi fikrlari** (Comment qo'shish, o'chirish, ko'rish)
+- ❤️ **Like tizimi** (Mahsulotlarni yoqtirish va yoqtirishdan chiqarish)
+- 📷 **Rasmlar bilan ishlash**
+- ⚡ **Maxsus takliflar (Deals)**
 
-## 🚀 Technologies Used
-- **Python** - Main programming language
-- **Django** - Web framework
-- **Django REST Framework (DRF)** - API development
-- **PostgreSQL** - Database
-- **JWT (SimpleJWT)** - Authentication
-- **Docker** - Containerization
+## 🛠 Texnologiyalar
 
-## 📂 Project Structure
-```
-ecommerce_backend/
-│── config/
-│   ├── __init__.py
-│   ├── asgi.py
-│   ├── settings.py
-│   ├── urls.py
-│   ├── wsgi.py
-│── shop/
-│   ├── __init__.py
-│   ├── admin.py
-│   ├── apps.py
-│   ├── models.py
-│   ├── serializers.py
-│   ├── tests.py
-│   ├── urls.py
-│   ├── views.py
-│── manage.py
-│── requirements.txt
-```
+- **Backend**: Django, Django REST Framework (DRF)
+- **Ma'lumotlar bazasi**: PostgreSQL
+- **Autentifikatsiya**: JWT
+- **Versiya nazorati**: Git & GitHub
 
-## 🔧 Installation & Setup
+## 🔧 O'rnatish
 
-### Prerequisites
-Make sure you have the following installed:
-- Python 3.9+
-- PostgreSQL
-- Docker (Optional, for containerization)
-
-### Clone the Repository
+### 1️⃣. Repository'ni klonlash
 ```bash
-git clone https://github.com/nematovN/ecommerce_backend.git
-cd ecommerce_backend
+  git clone https://github.com/nematovN/e-commerce_backend.git
+  cd e-commerce_backend
 ```
 
-### Install Dependencies
+### 2️⃣. Virtual muhit yaratish va faollashtirish
 ```bash
-pip install -r requirements.txt
+  python -m venv .venv  # Virtual environment yaratish
+  source .venv/bin/activate  # Linux & Mac
+  .venv\Scripts\activate  # Windows
 ```
 
-### Set Up Environment Variables
-Copy the `.env.example` file and rename it to `.env`. Then, configure your database credentials inside `.env`.
-
-### Run Migrations
+### 3️⃣. Kerakli kutubxonalarni o‘rnatish
 ```bash
-python manage.py migrate
+  pip install -r requirements.txt
 ```
 
-### Create a Superuser
+### 4️⃣. Ma'lumotlar bazasini sozlash
 ```bash
-python manage.py createsuperuser
+  python manage.py migrate
+  python manage.py createsuperuser  # Admin yaratish
 ```
 
-### Start the Development Server
+### 5️⃣. Serverni ishga tushirish
 ```bash
-python manage.py runserver
+  python manage.py runserver
 ```
 
-## 🐳 Run with Docker
-```bash
-docker-compose up --build
-```
+## 📡 API Endpointlar
 
-## 📌 API Endpoints
-| Method | Endpoint             | Description         |
-|--------|----------------------|---------------------|
-| POST   | `/api/auth/register/` | User registration  |
-| POST   | `/api/auth/login/`    | User login         |
-| GET    | `/api/products/`      | List all products  |
-| GET    | `/api/products/{id}/` | Retrieve a product |
-| POST   | `/api/products/`      | Create a product   |
-| PUT    | `/api/products/{id}/` | Update a product   |
-| DELETE | `/api/products/{id}/` | Delete a product   |
-| POST   | `/api/products/{id}/like/` | Like a product |
-| POST   | `/api/products/{id}/comment/` | Comment on a product |
+| Endpoint | Method | Tavsif |
+|----------|--------|---------|
+| `/api/register/` | `POST` | Foydalanuvchi ro'yxatdan o'tkazish |
+| `/api/login/` | `POST` | Login qilish (JWT Token) |
+| `/api/user/` | `GET` | Foydalanuvchi profili |
+| `/api/products/` | `GET` | Mahsulotlar ro'yxati |
+| `/api/products/{id}/` | `GET` | Mahsulot tafsilotlari |
+| `/api/products/{id}/comments/` | `GET` | Mahsulotga yozilgan izohlar |
+| `/api/products/{id}/comments/add/` | `POST` | Izoh qo‘shish |
+| `/api/comments/{id}/delete/` | `DELETE` | Izohni o‘chirish |
+| `/api/products/{id}/like/` | `POST` | Like bosish |
+| `/api/products/{id}/unlike/` | `DELETE` | Likeni olib tashlash |
 
-## 🛠 Contribution
-1. Fork the repository
-2. Create a new branch (`feature/new-feature`)
-3. Commit changes (`git commit -m 'Add new feature'`)
-4. Push to GitHub (`git push origin feature/new-feature`)
-5. Create a Pull Request
+👉 **Barcha endpointlar uchun batafsil dokumentatsiya:** `http://127.0.0.1:8000/swagger/`
 
-## 📄 License
-This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
+## 🎯 Muallif
 
-## ✉️ Contact
-For any inquiries or issues, please contact [Nematov Nemat](nemat8954@gmail.com).
+👨‍💻 **Nematov** - Backend Developer
 
+📌 **GitHub**: [nematovN](https://github.com/nematovN)
