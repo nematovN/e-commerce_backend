@@ -1,7 +1,7 @@
 # E-Commerce Backend
 
 ![GitHub repo size](https://img.shields.io/github/repo-size/nematovN/e-commerce_backend)
-![GitHub contributors](https://img.shields.io/github/contributors/nematovN/e-commerce_backend)
+![GitHub contributors](https://img.shields.io/github/contributors/nematovN/e-commerce-backend)
 ![GitHub last commit](https://img.shields.io/github/last-commit/nematovN/e-commerce_backend)
 ![GitHub stars](https://img.shields.io/github/stars/nematovN/e-commerce_backend?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/nematovN/e-commerce_backend?style=social)
