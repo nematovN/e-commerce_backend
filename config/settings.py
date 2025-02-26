@@ -42,6 +42,7 @@ INSTALLED_APPS = [
 
     'drf_spectacular',
     'rest_framework',
+    'drf_spectacular_sidecar',
 ]
 
 MIDDLEWARE = [
@@ -81,7 +82,7 @@ WSGI_APPLICATION = 'config.wsgi.application'
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
-        "NAME": "shop",
+        "NAME": "tests",
         "USER": "postgres",
         "PASSWORD": "1",
         "HOST": "127.0.0.1",
@@ -113,14 +114,17 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'uz'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Tashkent'
 
 USE_I18N = True
 
 USE_TZ = True
 
+CELERY_BROKER_URL = 'redis://localhost:6379/0'  # Redis broker ishlatamiz
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
 
 
 # Static files (CSS, JavaScript, Images)

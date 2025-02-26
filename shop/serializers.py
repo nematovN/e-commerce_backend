@@ -1,5 +1,5 @@
 from collections import OrderedDict
-
+from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from django.contrib.auth.password_validation import validate_password
 from django.contrib.auth import get_user_model
@@ -8,6 +8,7 @@ from .models import (
     Category, Product, Deal, Brand, Feature,
     ProductImage,  Like, Comment
 )
+
 
 User = get_user_model()
 
@@ -60,20 +61,20 @@ class ProductImageSerializer(serializers.ModelSerializer):
             return request.build_absolute_uri(obj.image.url)
         return obj.image.url
 
-class CommentSerializer(serializers.ModelSerializer):
-    user = UserSerializer(read_only=True)  # Foydalanuvchi haqida ma'lumot qo'shish uchun
 
+class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
         fields = ['id', 'user', 'product', 'text', 'created_at']
         read_only_fields = ['user', 'product', 'created_at']
 
 
+
 class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Like
-        fields = ['id', 'user', 'product', 'created_at']
-        read_only_fields = ['user', 'product', 'created_at']
+        fields = ['id', 'user', 'product' ]
+        read_only_fields = ['user', 'product']
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -82,16 +83,13 @@ class ProductSerializer(serializers.ModelSerializer):
     category_name = serializers.CharField(source='category.name', read_only=True)
     created_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
     updated_at = serializers.DateTimeField(format='%Y-%m-%d %H:%M:%S', read_only=True)
-    comment_count = serializers.IntegerField(source='comments.count', read_only=True)
-    like_count = serializers.IntegerField(source='likes.count', read_only=True)
     comments = CommentSerializer(many=True, read_only=True)  # Mahsulotga yozilgan sharhlar
-    is_liked = serializers.SerializerMethodField()  # Foydalanuvchi mahsulotni yoqtirganmi
     class Meta:
         model = Product
         fields = [
             "id", "name", "description", "price", "stock", "created_at",
             "updated_at", "category", "category_name", "brand", "images",
-            "features", "comment_count", "like_count", "comments", "is_liked"
+            "features", "likes_count", "comments",
         ]
 
     def to_representation(self, instance):
@@ -111,7 +109,6 @@ class BrandSerializer(serializers.ModelSerializer):
         fields = ['name']
 
 
-
 class DealSerializer(serializers.ModelSerializer):
     product_name = serializers.CharField(source="product.name", read_only=True)
     product_image = serializers.SerializerMethodField()
@@ -119,17 +116,16 @@ class DealSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Deal
-        fields = ["product_name", "product_image", "discount_percent", "start_time", "end_time"]
+        fields = ["product_name", "product_image", "discount", "start_time", "end_time"]
 
     def get_product_image(self, obj):
-        first_image = obj.product.images.first()  # Mahsulotning birinchi rasmini olish
+        first_image = obj.product.images.first()
         if first_image:
             request = self.context.get("request")
             return request.build_absolute_uri(first_image.image.url) if request else first_image.image.url
         return None
 
     def get_end_time(self, obj):
-        if obj.start_time and obj.duration:
-            duration = obj.duration if isinstance(obj.duration, timedelta) else timedelta(seconds=obj.duration)
-            return (obj.start_time + duration).strftime("%Y-%m-%d %H:%M:%S")
-        return None  # Agar start_time yoki duration bo‘lmasa, `None`
+        if obj.end_time:
+            return obj.end_time.isoformat()  # 🔥 `isoformat()` faqat datetime qiymat uchun ishlaydi
+        return None  # Agar `end_time` `None` bo‘lsa, `None` qaytariladi

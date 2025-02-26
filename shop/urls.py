@@ -23,7 +23,7 @@ from .views import (
     CommentListView, CommentCreateView, CommentDeleteView,
 
     # Like
-    LikeCreateView, LikeDeleteView,
+    add_like,  delete_like, get_comments
 )
 
 app_name = "ecommerce"
@@ -59,7 +59,6 @@ urlpatterns = [
     # =========================
     path('products/', ProductListView.as_view(), name='product_list'),
     path('products/<int:pk>/', ProductDetailView.as_view(), name='product_detail'),
-    path('product-images/', ProductImageListView.as_view(), name='product_image_list'),
 
     # =========================
     # DEAL
@@ -69,13 +68,14 @@ urlpatterns = [
     # =========================
     # COMMENT
     # =========================
-    path('products/<int:product_id>/comments/', CommentListView.as_view(), name='comment-list'),
+    path('api/products/<int:product_id>/comments/', get_comments, name='add-comment'),
     path('products/<int:product_id>/comments/add/', CommentCreateView.as_view(), name='comment-add'),
     path('comments/<int:pk>/delete/', CommentDeleteView.as_view(), name='comment-delete'),
 
     # =========================
     # LIKE
     # =========================
-    path('products/<int:product_id>/like/', LikeCreateView.as_view(), name='like-add'),
-    path('products/<int:product_id>/unlike/', LikeDeleteView.as_view(), name='like-remove'),
+    path('api/products/<int:product_id>/like/add/', add_like, name='add_like'),
+    path('api/products/<int:product_id>/like/delete/', delete_like, name='delete_like'),
+
 ]

@@ -4,6 +4,7 @@ from django.utils import timezone
 from datetime import timedelta
 from django.db import models
 from .managers import UserManager
+from django.utils.timezone import now
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -70,9 +71,16 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True, blank=True)
     features = models.ManyToManyField(Feature, related_name="products")
+    likes_count = models.PositiveIntegerField(default=0)  # Like'lar soni
+    likes = models.ManyToManyField(User, related_name="liked_products", blank=True)
+
+
 
     def __str__(self):
         return self.name
+
+    def likes_count(self):
+        return self.product_likes.count()
 
 
 class ProductAttributeValue(models.Model):
@@ -91,30 +99,23 @@ class ProductImage(models.Model):
 
 
 class Deal(models.Model):
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='deals')
-    product_name = models.CharField(max_length=255, help_text='Enter product name')
-    discount_percent = models.DecimalField(max_digits=5, decimal_places=2, help_text="Chegirma foizda (%)")
-    start_time = models.DateTimeField(default=timezone.now, help_text="Chegirma boshlanish vaqti")
-    duration = models.DurationField(default=timedelta(hours=24), help_text="Chegirma qancha davom etadi (masalan, 24 soat)")
-    end_time = models.DateTimeField(null=True, blank=True, help_text="Chegirma tugash vaqti")
-    is_active = models.BooleanField(default=True, help_text="Chegirma aktiv yoki yo'q")
+    product = models.ForeignKey("shop.Product", on_delete=models.CASCADE)
+    name = models.CharField(max_length=255)
+    discount = models.FloatField()
+    start_time = models.DateTimeField(default=now)
+    end_time = models.DateTimeField(null=True, blank=True, default=None)  # 🔥 `default=None` qo‘shildi
+    is_active = models.BooleanField(default=True)
 
     def save(self, *args, **kwargs):
-        self.end_time = self.start_time + self.duration
+        # Agar end_time o'tib ketgan bo'lsa, is_active ni o'chirish
+        if self.end_time < now():
+            self.is_active = False
         super().save(*args, **kwargs)
-
-    def is_valid(self):
-        return self.start_time <= timezone.now() <= self.end_time
-
-    def __str__(self):
-        return f"{self.product.name} - {self.discount_percent}% chegirma ({self.duration})"
-
-
 #   Comment
 
 class Comment(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="comments")
+    user = models.ForeignKey(User, on_delete=models.CASCADE)  # Komment yozgan user
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='comments')  # Qaysi productga yozilganini aniqlash uchun
     text = models.TextField()
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -124,12 +125,9 @@ class Comment(models.Model):
 # Like
 
 class Like(models.Model):
+    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="product_likes")
     user = models.ForeignKey(User, on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="likes")
-    created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
-        unique_together = ('user', 'product')  # Bir user bitta productga faqat bitta like qo‘ya oladi
+        unique_together = ('product', 'user')
 
-    def __str__(self):
-        return f"{self.user.username} liked {self.product.name}"
