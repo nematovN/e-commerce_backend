@@ -7,28 +7,35 @@
 ![GitHub forks](https://img.shields.io/github/forks/nematovN/e-commerce_backend?style=social)
 ![GitHub license](https://img.shields.io/github/license/nematovN/e-commerce_backend)
 
+---
+
+<p align="center">
+  <img src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" width="600" alt="Coding Animation">
+</p>
 
 ## 📌 Overview
 This is a backend service for an e-commerce platform built using Django and Django REST Framework (DRF). The API provides user authentication, product management, pagination, filtering, and admin functionalities.
 
 ## 🛠️ Features
-- **User Authentication**: JWT-based authentication with login and registration.
-- **Role Management**: Admin and regular users.
-- **Product Management**: CRUD operations for products.
-- **Pagination & Filtering**: Optimized data retrieval.
-- **Comment & Likes**: Users can comment on and like products.
-- **Admin Panel**: Secure admin functionalities.
+✅ **User Authentication**: JWT-based authentication with login and registration.  
+✅ **Role Management**: Admin and regular users.  
+✅ **Product Management**: CRUD operations for products.  
+✅ **Pagination & Filtering**: Optimized data retrieval.  
+✅ **Comment & Likes**: Users can comment on and like products.  
+✅ **Admin Panel**: Secure admin functionalities.  
 
 ## 🚀 Technologies Used
-- **Python** - Main programming language
-- **Django** - Web framework
-- **Django REST Framework (DRF)** - API development
-- **PostgreSQL** - Database
-- **JWT (SimpleJWT)** - Authentication
-- **Docker** - Containerization
+- **🐍 Python** - Main programming language
+- **🦄 Django** - Web framework
+- **⚙️ Django REST Framework (DRF)** - API development
+- **🐘 PostgreSQL** - Database
+- **🔐 JWT (SimpleJWT)** - Authentication
+- **🐳 Docker** - Containerization
+
+---
 
 ## 📂 Project Structure
-```
+```bash
 ecommerce_backend/
 │── config/
 │   ├── __init__.py
@@ -86,10 +93,14 @@ python manage.py createsuperuser
 python manage.py runserver
 ```
 
+---
+
 ## 🐳 Run with Docker
 ```bash
 docker-compose up --build
 ```
+
+---
 
 ## 📌 API Endpoints
 | Method | Endpoint             | Description         |
@@ -104,6 +115,8 @@ docker-compose up --build
 | POST   | `/api/products/{id}/like/` | Like a product |
 | POST   | `/api/products/{id}/comment/` | Comment on a product |
 
+---
+
 ## 🛠 Contribution
 1. Fork the repository
 2. Create a new branch (`feature/new-feature`)
@@ -111,9 +124,17 @@ docker-compose up --build
 4. Push to GitHub (`git push origin feature/new-feature`)
 5. Create a Pull Request
 
+---
+
 ## 📄 License
 This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
 ## ✉️ Contact
 For any inquiries or issues, please contact [Nematov Nemat](nemat8954@gmail.com).
+
+---
+
+<p align="center">
+  <img src="https://media.giphy.com/media/kH6CqYiquZawmU1HI6/giphy.gif" width="600" alt="Thank You">
+</p>
 
